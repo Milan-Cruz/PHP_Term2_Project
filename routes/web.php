@@ -11,7 +11,7 @@ use App\Http\Controllers\CommentController;
 
 Route::get('/', function () {
     return view('welcome');
-});
+})->name('home');
 
 // Dashboard Route
 Route::get('/dashboard', [DashboardController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
