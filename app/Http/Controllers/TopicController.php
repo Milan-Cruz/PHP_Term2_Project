@@ -14,21 +14,20 @@ class TopicController extends Controller
     }
 
     public function index(Request $request)
-{
-    $sort = $request->get('sort', 'created_at');
-    $topics = Topic::with('user')
-        ->when($sort === 'author', function ($query) {
-            $query->join('users', 'users.id', '=', 'topics.user_id')
-                ->select('topics.*', 'users.name as author_name')
-                ->orderBy('author_name');
-        }, function ($query) use ($sort) {
-            $query->orderBy($sort);
-        })
-        ->paginate(10); // Added pagination
+    {
+        $sort = $request->get('sort', 'created_at');
+        $topics = Topic::with('user')
+            ->when($sort === 'author', function ($query) {
+                $query->join('users', 'users.id', '=', 'topics.user_id')
+                    ->select('topics.*', 'users.name as author_name')
+                    ->orderBy('author_name');
+            }, function ($query) use ($sort) {
+                $query->orderBy($sort, 'desc'); // Order by the selected field, default to descending
+            })
+            ->paginate(10);
 
-    return view('topics.index', compact('topics', 'sort'));
-}
-
+        return view('topics.index', compact('topics', 'sort'));
+    }
 
     public function create()
     {
@@ -57,7 +56,8 @@ class TopicController extends Controller
     public function show(Topic $topic)
     {
         $this->authorize('view', $topic);
-        return view('topics.show', compact('topic'));
+        $articles = $topic->articles()->paginate(10); // Paginate articles related to the topic
+        return view('topics.show', compact('topic', 'articles'));
     }
 
     public function edit(Topic $topic)

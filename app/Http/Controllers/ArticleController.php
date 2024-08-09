@@ -19,13 +19,15 @@ class ArticleController extends Controller
     public function index(Request $request)
     {
         $sort = $request->get('sort', 'created_at');
+        $order = $sort === 'created_at' ? 'desc' : 'asc';
+
         $articles = Article::with('user')
             ->when($sort === 'author', function ($query) {
                 $query->join('users', 'users.id', '=', 'articles.created_by')
                     ->select('articles.*', 'users.name as author_name')
                     ->orderBy('author_name');
-            }, function ($query) use ($sort) {
-                $query->orderBy($sort);
+            }, function ($query) use ($sort, $order) {
+                $query->orderBy($sort, $order);
             })
             ->paginate(10);
 
@@ -49,13 +51,13 @@ class ArticleController extends Controller
             'topic_id' => 'required|exists:topics,id',
         ]);
 
-        $imagePath = 'article_images/article_base.png'; // Caminho padrão da imagem
+        $imagePath = 'article_images/article_base.png'; // Default image path
 
         if ($request->hasFile('image')) {
             $image = $request->file('image');
             $imagePath = $image->store('article_images', 'public');
 
-            // Redimensionar a imagem usando a biblioteca GD
+            // Resize the image using GD library
             $this->resizeImage(public_path("storage/{$imagePath}"), 800, 600);
         }
 
@@ -64,7 +66,7 @@ class ArticleController extends Controller
             'content' => $request->content,
             'image' => $imagePath,
             'created_by' => Auth::id(),
-            'topic_id' => $request->topic_id, // Incluindo o topic_id
+            'topic_id' => $request->topic_id, // Include topic_id
         ]);
 
         return redirect()->route('articles.index')->with('success', 'Article created successfully.');
@@ -93,7 +95,7 @@ class ArticleController extends Controller
         $imagePath = $article->image;
 
         if ($request->hasFile('image')) {
-            // Exclui a imagem antiga se existir e não for a padrão
+            // Delete the old image if it exists and is not the default image
             if ($article->image && $article->image != 'article_images/article_base.png') {
                 Storage::disk('public')->delete($article->image);
             }
@@ -101,7 +103,7 @@ class ArticleController extends Controller
             $image = $request->file('image');
             $imagePath = $image->store('article_images', 'public');
 
-            // Redimensionar a imagem usando a biblioteca GD
+            // Resize the image using GD library
             $this->resizeImage(public_path("storage/{$imagePath}"), 800, 600);
         }
 
@@ -109,7 +111,7 @@ class ArticleController extends Controller
             'title' => $request->title,
             'content' => $request->content,
             'image' => $imagePath,
-            'topic_id' => $request->topic_id, // Incluindo o topic_id
+            'topic_id' => $request->topic_id, // Include topic_id
         ]);
 
         return redirect()->route('articles.index')->with('success', 'Article updated successfully.');
@@ -117,15 +119,15 @@ class ArticleController extends Controller
 
     public function resetImage(Article $article)
     {
-        // Exclui a imagem antiga se existir e não for a imagem padrão
+        // Delete the old image if it exists and is not the default image
         if ($article->image && $article->image != 'article_images/article_base.png') {
             Storage::disk('public')->delete($article->image);
         }
 
-        // Atualiza o campo da imagem do artigo para a imagem padrão
+        // Update the article image field to the default image
         $article->update([
             'image' => 'article_images/article_base.png',
-            'topic_id' => $article->topic_id, // Incluindo o topic_id para evitar erros de validação
+            'topic_id' => $article->topic_id, // Include topic_id to avoid validation errors
         ]);
 
         return redirect()->route('articles.edit', $article)->with('success', 'Image reset successfully.');
@@ -133,7 +135,7 @@ class ArticleController extends Controller
 
     public function destroy(Article $article)
     {
-        // Exclui a imagem se existir e não for a imagem padrão
+        // Delete the image if it exists and is not the default image
         if ($article->image && $article->image != 'article_images/article_base.png') {
             Storage::disk('public')->delete($article->image);
         }
@@ -143,7 +145,7 @@ class ArticleController extends Controller
         return redirect()->route('articles.index')->with('success', 'Article deleted successfully.');
     }
 
-    // Função para redimensionar a imagem usando a biblioteca GD
+    // Function to resize the image using GD library
     private function resizeImage($file, $w, $h)
     {
         list($width, $height) = getimagesize($file);
@@ -152,6 +154,6 @@ class ArticleController extends Controller
 
         imagecopyresampled($dst, $src, 0, 0, 0, 0, $w, $h, $width, $height);
 
-        imagejpeg($dst, $file); // Salva a imagem redimensionada
+        imagejpeg($dst, $file); // Save the resized image
     }
 }

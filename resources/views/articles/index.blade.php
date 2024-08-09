@@ -34,24 +34,31 @@
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900 dark:text-gray-100">
                     @foreach ($articles as $article)
-                        <div class="mb-4 p-4 bg-gray-100 dark:bg-gray-700 rounded-md">
-                            <h4 class="text-xl font-bold">{{ $article->title }}</h4>
-                            <p class="text-gray-700 dark:text-gray-300">{!! Str::limit($article->content, 150) !!}</p>
-                            <p class="text-sm text-gray-600 dark:text-gray-400">
-                                {{ $article->created_at->format('Y-m-d h:i A') }}{{ $article->created_at->isToday() ? ' (' . $article->created_at->diffForHumans() . ')' : '' }}
-                            </p>
-                            <div class="flex items-center">
-                                <a href="{{ route('articles.show', $article->id) }}" class="text-blue-500 hover:text-blue-600 mr-4">{{ __('Read more') }}</a>
-                                @can('update', $article)
-                                    <a href="{{ route('articles.edit', $article->id) }}" class="text-yellow-500 hover:text-yellow-600 mr-4">{{ __('Edit') }}</a>
-                                @endcan
-                                @can('delete', $article)
-                                    <form action="{{ route('articles.destroy', $article->id) }}" method="POST" onsubmit="return confirm('Are you sure?');">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="text-red-500 hover:text-red-600">{{ __('Delete') }}</button>
-                                    </form>
-                                @endcan
+                        <div class="mb-4 p-4 bg-gray-100 dark:bg-gray-700 rounded-md flex">
+                            @if ($article->image)
+                                <div class="mr-4 flex-shrink-0 flex items-center justify-center">
+                                    <img src="{{ asset('storage/' . $article->image) }}" alt="{{ $article->title }} image" class="h-[90px] w-[120px] object-cover rounded-md" />
+                                </div>
+                            @endif
+                            <div class="flex flex-col justify-center">
+                                <h4 class="text-xl font-bold">{{ $article->title }}</h4>
+                                <p class="text-gray-700 dark:text-gray-300 line-clamp-4">{!! Str::limit($article->content, 150) !!}</p>
+                                <p class="text-sm text-gray-600 dark:text-gray-400">
+                                    {{ $article->created_at->format('Y-m-d h:i A') }}{{ $article->created_at->isToday() ? ' (' . $article->created_at->diffForHumans() . ')' : '' }}
+                                </p>
+                                <div class="flex items-center mt-2">
+                                    <a href="{{ route('articles.show', $article->id) }}" class="text-blue-500 hover:text-blue-600 mr-4">{{ __('Read more') }}</a>
+                                    @can('update', $article)
+                                        <a href="{{ route('articles.edit', $article->id) }}" class="text-yellow-500 hover:text-yellow-600 mr-4">{{ __('Edit') }}</a>
+                                    @endcan
+                                    @can('delete', $article)
+                                        <form action="{{ route('articles.destroy', $article->id) }}" method="POST" onsubmit="return confirm('Are you sure?');">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="text-red-500 hover:text-red-600">{{ __('Delete') }}</button>
+                                        </form>
+                                    @endcan
+                                </div>
                             </div>
                         </div>
                     @endforeach
