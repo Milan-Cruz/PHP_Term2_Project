@@ -1,0 +1,16 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom Hover Effects for Text Color */
+.hover\:text-blue-600:hover {
+    @apply text-blue-600;
+}
+
+.hover\:text-yellow-600:hover {
+    @apply text-yellow-600;
+}
+
+.hover\:text-red-600:hover {
+    @apply text-red-600;
+}
