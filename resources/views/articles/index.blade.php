@@ -35,7 +35,7 @@
                 <div class="p-6 text-gray-900 dark:text-gray-100">
                     @foreach ($articles as $article)
                         <div class="mb-4 p-4 bg-gray-100 dark:bg-gray-700 rounded-md flex">
-                            @if ($article->image)
+                            @if ($article->image && $article->image != 'article_images/article_base.png')
                                 <div class="mr-4 flex-shrink-0 flex items-center justify-center">
                                     <img src="{{ asset('storage/' . $article->image) }}" alt="{{ $article->title }} image" class="h-[90px] w-[120px] object-cover rounded-md" />
                                 </div>

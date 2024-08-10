@@ -14,3 +14,70 @@
 .hover\:text-red-600:hover {
     @apply text-red-600;
 }
+
+/* General reset and normalization */
+ul, ol {
+    margin-left: 1.5em; /* Unified margin for lists */
+    padding-left: 0; /* Remove padding to avoid double indentation */
+    list-style-position: inside; /* Ensure the bullet/number is within the content block */
+}
+
+/* Unordered List */
+ul li[style] {
+    text-align: initial !important;
+    list-style-type: disc !important;
+    display: list-item !important;
+    white-space: normal !important;
+}
+
+/* Level 2 - Nested Unordered List */
+ul ul li[style] {
+    list-style-type: circle !important;
+    margin-left: 1.5em !important;
+}
+
+/* Level 3 - Nested Unordered List */
+ul ul ul li[style] {
+    list-style-type: square !important;
+    margin-left: 1.5em !important;
+}
+
+/* Ordered List */
+ol li[style] {
+    text-align: initial !important;
+    list-style-type: decimal !important;
+    display: list-item !important;
+    white-space: normal !important;
+}
+
+/* Level 2 - Nested Ordered List */
+ol ol li[style] {
+    list-style-type: lower-alpha !important;
+    margin-left: 1.5em !important;
+}
+
+/* Level 3 - Nested Ordered List */
+ol ol ol li[style] {
+    list-style-type: lower-roman !important;
+    margin-left: 1.5em !important;
+}
+
+/* Mixed Nested Lists (Unordered inside Ordered, and vice versa) */
+ol ul li[style], ul ol li[style] {
+    list-style-type: square !important;
+    margin-left: 1.5em !important;
+}
+
+/* Prevent list items from breaking unexpectedly */
+li {
+    white-space: nowrap; /* Prevent text wrapping in list items */
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Allow specific list items to wrap text */
+li.allow-wrap {
+    white-space: normal;
+    overflow: visible;
+    text-overflow: clip;
+}
